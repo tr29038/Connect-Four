@@ -6,9 +6,13 @@ int main()
 {
     // Temporary
     Board board;
-    board.print(std::cout);
-    board.insert('R', 3);
-    board.insert('Y', 3);
+    std::size_t input;
+    do
+    {
+        board.print(std::cout);
+        std::cout << "Column: ";
+        std::cin >> input;
+    } while (!board.insert('R', input));
     board.print(std::cout);
 
     return 0;
