@@ -28,6 +28,6 @@ For a list of options, run the command:
 ```
 ./connect-four gibberish
 ```
-Where [] indicates optional.
-If the difficulty is omitted, medium is selected by default.
-If which player goes first is omitted, the player goes first by default.
+Where [] indicates optional.  
+If the difficulty is omitted, medium is selected by default.  
+If which player goes first is omitted, the player goes first by default.  
