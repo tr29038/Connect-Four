@@ -26,7 +26,7 @@ Run the following command:
 
 For a list of options, run the command:  
 ```
-./Connect-Four gibberish
+./connect-four gibberish
 ```
 Where [] indicates optional.
 If the difficulty is omitted, medium is selected by default.
