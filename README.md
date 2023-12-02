@@ -30,4 +30,5 @@ For a list of options, run the command:
 ```
 Where [] indicates optional.  
 If the difficulty is omitted, medium is selected by default.  
+If pruning toggle is omitted, pruning is enabled by default.
 If which player goes first is omitted, the player goes first by default.  
