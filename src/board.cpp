@@ -15,7 +15,8 @@ Board::Board()
 //! @brief Main function to play Connect-4 against AI.
 //! @param difficulty_depth The depth in which the AI will traverse when running minimax.
 //! @param player_first True if the player moves first, false otherwise.
-void Board::play(int difficulty_depth, bool player_first)
+//! @param alpha_beta_pruning True to use alpha-beta pruning, false otherwise.
+void Board::play(int difficulty_depth, bool player_first, bool alpha_beta_pruning)
 {
     if (player_first)
         print(std::cout);
@@ -74,7 +75,7 @@ void Board::play(int difficulty_depth, bool player_first)
             player_first = true;
 
         // AI's turn
-        auto ai_column = minimax(difficulty_depth, board);
+        auto ai_column = minimax(difficulty_depth, board, alpha_beta_pruning);
         auto ai_row = insert('R', ai_column);
 
         print(std::cout);
@@ -267,22 +268,24 @@ bool Board::is_full(const board_t& board) const
 //! @brief Begin the recusive minimax algorithm.
 //! @param depth The maximum depth to go.
 //! @param board The unmodified game board.
+//! @param alpha_beta_pruning True to use alpha-beta pruning, false otherwise.
 //! @return The ideal column for the next move.
-std::size_t Board::minimax(int depth, const board_t& board)
+std::size_t Board::minimax(int depth, const board_t& board, bool alpha_beta_pruning)
 {
-    return minimax(board, true, depth).first;
+    return minimax(board, true, depth, alpha_beta_pruning).first;
 }
 
 //! @brief Run the minimax algorithm with alpha-beta pruning.
 //! @param state The current state/board.
 //! @param is_max True for max, false for min.
 //! @param depth The current depth of the tree.
+//! @param alpha_beta_pruning True to use alpha-beta pruning, false otherwise.
 //! @param beta The current beta value.
 //! @param alpha The current alpha value.
 //! @param last_row The last inserted at row.
 //! @param last_column The last inserted at column.
 //! @return A pair containing: [first] -> The column of the current ideal state to insert in and [second] -> The score of the current ideal state.
-std::pair<std::size_t, int> Board::minimax(board_t state, bool is_max, int depth, int beta, int alpha, std::optional<std::size_t> last_row, std::optional<std::size_t> last_column)
+std::pair<std::size_t, int> Board::minimax(board_t state, bool is_max, int depth, bool alpha_beta_pruning, int beta, int alpha, std::optional<std::size_t> last_row, std::optional<std::size_t> last_column)
 {
     // If there's a winner, exit now.
     if (last_column.has_value() && last_row.has_value() && winner_winner_chicken_dinner(last_column.value(), last_row.value(), state))
@@ -320,12 +323,15 @@ std::pair<std::size_t, int> Board::minimax(board_t state, bool is_max, int depth
             columns.erase(column_it);
 
             auto [successor_state, row] = insert(state, column, 'R');
-            auto score = minimax(successor_state, false, depth - 1, beta, alpha, row, column).second;
+            auto score = minimax(successor_state, false, depth - 1, alpha_beta_pruning, beta, alpha, row, column).second;
             if (score > chosen_score)
             {
                 chosen_score = score;
                 chosen_column = column;
             }
+
+            if (!alpha_beta_pruning)
+                continue;
 
             alpha = std::max(alpha, chosen_score);
             if (beta <= alpha)
@@ -347,12 +353,15 @@ std::pair<std::size_t, int> Board::minimax(board_t state, bool is_max, int depth
             columns.erase(column_it);
 
             auto [successor_state, row] = insert(state, column, 'Y');
-            auto score = minimax(successor_state, true, depth - 1, beta, alpha, row, column).second;
+            auto score = minimax(successor_state, true, depth - 1, alpha_beta_pruning, beta, alpha, row, column).second;
             if (score < chosen_score)
             {
                 chosen_score = score;
                 chosen_column = column;
             }
+
+            if (!alpha_beta_pruning)
+                continue;
 
             beta = std::min(beta, chosen_score);
             if (beta <= alpha)

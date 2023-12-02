@@ -20,7 +20,7 @@ class Board
 
         Board();
 
-        void play(int, bool);
+        void play(int, bool, bool);
         void print(std::ostream&) const;
 
     private:
@@ -33,8 +33,8 @@ class Board
         bool is_full(const board_t&) const;
 
         // minimax functions
-        std::size_t minimax(int, const board_t&);
-        std::pair<std::size_t, int> minimax(board_t, bool, int, int = INT_MAX, int = INT_MIN, std::optional<std::size_t> = std::nullopt, std::optional<std::size_t> = std::nullopt);
+        std::size_t minimax(int, const board_t&, bool);
+        std::pair<std::size_t, int> minimax(board_t, bool, int, bool, int = INT_MAX, int = INT_MIN, std::optional<std::size_t> = std::nullopt, std::optional<std::size_t> = std::nullopt);
         std::pair<board_t, std::size_t> insert(board_t, std::size_t, char);
         int calculate_score(char, const board_t&);
         int calculate_horizontal_score(char, const board_t&);
