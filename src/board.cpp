@@ -32,10 +32,9 @@ void Board::play(int difficulty_depth, bool player_first, bool alpha_beta_prunin
         if (player_first)
         {
             // Player's turn
-            std::size_t row;
-            int column;
             while (true)
             {
+                int column;
                 // Disallow entering non-numeric characters and columns that are out of range or full.
                 try
                 {
@@ -53,7 +52,7 @@ void Board::play(int difficulty_depth, bool player_first, bool alpha_beta_prunin
 
                 try
                 {
-                    row = insert('Y', column);
+                    insert('Y', column);
                     break;
                 }
                 catch (const std::exception& e)
@@ -63,7 +62,7 @@ void Board::play(int difficulty_depth, bool player_first, bool alpha_beta_prunin
 
                 print(std::cout);
 
-                if (winner_winner_chicken_dinner(column, row, board))
+                if (winner_winner_chicken_dinner(board))
                 {
                     std::cout << "Player won!\n";
                     return;
@@ -76,11 +75,11 @@ void Board::play(int difficulty_depth, bool player_first, bool alpha_beta_prunin
 
         // AI's turn
         auto ai_column = minimax(difficulty_depth, board, alpha_beta_pruning);
-        auto ai_row = insert('R', ai_column);
+        insert('R', ai_column);
 
         print(std::cout);
 
-        if (winner_winner_chicken_dinner(ai_column, ai_row, board))
+        if (winner_winner_chicken_dinner(board))
         {
             std::cout << "AI won!\n";
             return;
@@ -140,12 +139,22 @@ std::optional<std::size_t> Board::next_available_row(std::size_t column) const
 }
 
 //! @brief Check if a winner exists from the given slot.
-//! @param column The column to check from.
-//! @param row The row to check from.
 //! @return True if a winner exists from the current slot, false otherwise.
-bool Board::winner_winner_chicken_dinner(std::size_t column, std::size_t row, const board_t& board) const
+bool Board::winner_winner_chicken_dinner(const board_t& board) const
 {
-    return connected_four_horizontally(column, row, board) || connected_four_vertically(column, row, board) || connected_four_diagonally(column, row, board);
+    for (std::size_t row = 0; row < board.size(); ++row)
+    {
+        for (std::size_t column = 0; column < board[row].size(); ++column)
+        {
+            if (board[row][column] == ' ')
+                continue;
+
+            if (connected_four_horizontally(column, row, board) || connected_four_vertically(column, row, board) || connected_four_diagonally(column, row, board))
+                return true;
+        }
+    }
+
+    return false;
 }
 
 //! @brief Check if four diagonal pieces, of the same type, are adjacent to each other.
@@ -288,7 +297,7 @@ std::size_t Board::minimax(int depth, const board_t& board, bool alpha_beta_prun
 std::pair<std::size_t, int> Board::minimax(board_t state, bool is_max, int depth, bool alpha_beta_pruning, int beta, int alpha, std::optional<std::size_t> last_row, std::optional<std::size_t> last_column)
 {
     // If there's a winner, exit now.
-    if (last_column.has_value() && last_row.has_value() && winner_winner_chicken_dinner(last_column.value(), last_row.value(), state))
+    if (last_column.has_value() && last_row.has_value() && winner_winner_chicken_dinner(state))
     {
         int score;
         if (state[last_row.value()][last_column.value()] == 'R')

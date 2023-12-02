@@ -26,7 +26,7 @@ class Board
     private:
         std::size_t insert(char, std::size_t);
         std::optional<std::size_t> next_available_row(std::size_t) const;
-        bool winner_winner_chicken_dinner(std::size_t, std::size_t, const board_t&) const;
+        bool winner_winner_chicken_dinner(const board_t&) const;
         bool connected_four_diagonally(std::size_t, std::size_t, const board_t&) const;
         bool connected_four_vertically(std::size_t, std::size_t, const board_t&) const;
         bool connected_four_horizontally(std::size_t, std::size_t, const board_t&) const;
